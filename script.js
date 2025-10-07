@@ -51,7 +51,7 @@ class Ripple {
         }
         ctx.closePath();
         ctx.strokeStyle = `rgba(${this.color},${this.alpha})`;
-        ctx.lineWidth = 2 + this.waveNoise * 2;
+        ctx.lineWidth = 4 + this.waveNoise * 3;
         ctx.stroke();
     }
 }
