@@ -13,10 +13,11 @@ let rippleList = [];
 // Stone counters
 let negativeCount = 0;
 let positiveCount = 0;
+let turbulence = 0; // for storminess
 
 // Ripple class
 class Ripple {
-    constructor(x, y, color, maxRadius = 200, speed = 3) {
+    constructor(x, y, color, maxRadius = 200, speed = 3, waveNoise = 0.5) {
         this.x = x;
         this.y = y;
         this.radius = 0;
@@ -24,7 +25,7 @@ class Ripple {
         this.alpha = 1;
         this.color = color;
         this.speed = speed;
-        this.waveNoise = Math.random() * 0.5; // uneven edges for realism
+        this.waveNoise = waveNoise;
     }
 
     update() {
@@ -57,7 +58,7 @@ function addRipple(x, y, type) {
     let speed = 3;
 
     if (type === 'negative') {
-        color = '255,0,0';
+        color = '255,50,50';
         negativeCount++;
 
         // First negative stone in center
@@ -68,17 +69,27 @@ function addRipple(x, y, type) {
             x = Math.random() * canvas.width;
             y = Math.random() * canvas.height;
         }
-        speed = 5; // faster for negative
+        speed = 5;
+        turbulence += 0.2; // more chaos
 
     } else if (type === 'positive') {
-        color = '0,255,255';
-        x = Math.random() * canvas.width;
-        y = Math.random() * canvas.height;
-        speed = 2; // slower for positive
+        color = '50,255,255';
         positiveCount++;
+
+        // Random positions for variety
+        if (positiveCount === 1 && negativeCount === 0) {
+            x = canvas.width / 2;
+            y = canvas.height / 2;
+        } else {
+            x = Math.random() * canvas.width;
+            y = Math.random() * canvas.height;
+        }
+
+        speed = 2;
+        turbulence = Math.max(0, turbulence - 0.3); // calm the water
     }
 
-    rippleList.push(new Ripple(x, y, color, maxRadius, speed));
+    rippleList.push(new Ripple(x, y, color, maxRadius, speed, 0.5 + Math.random() * 0.5));
 }
 
 // Reset water
@@ -86,43 +97,44 @@ function resetWater() {
     rippleList = [];
     negativeCount = 0;
     positiveCount = 0;
+    turbulence = 0;
     waterColor = { ...baseColor };
 }
 
-// Draw water background with gradient + subtle highlights
+// Draw water background with gradient + shimmer
 function drawWaterBackground() {
+    const t = Date.now() / 1000;
+    const waveHeight = 5 + turbulence * 10;
+
+    // Base gradient
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, `rgb(${waterColor.r + 20},${waterColor.g + 20},${waterColor.b + 20})`);
-    gradient.addColorStop(1, `rgb(${waterColor.r - 20},${waterColor.g - 20},${waterColor.b - 20})`);
+    gradient.addColorStop(0, `rgb(${waterColor.r + 30},${waterColor.g + 30},${waterColor.b + 30})`);
+    gradient.addColorStop(1, `rgb(${waterColor.r - 30},${waterColor.g - 30},${waterColor.b - 30})`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Subtle moving highlight lines for shimmer
-    const t = Date.now() / 1000;
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-    for (let i = 0; i < 5; i++) {
+    // Add dynamic shimmer lines for realism
+    ctx.strokeStyle = `rgba(255,255,255,${0.03 + turbulence * 0.02})`;
+    for (let i = 0; i < 8; i++) {
         ctx.beginPath();
-        ctx.moveTo(0, canvas.height * (i / 5) + Math.sin(t + i) * 10);
-        ctx.lineTo(canvas.width, canvas.height * (i / 5) + Math.sin(t + i) * 10);
+        let y = canvas.height * (i / 8) + Math.sin(t * 2 + i) * waveHeight;
+        ctx.moveTo(0, y);
+        for (let x = 0; x <= canvas.width; x += 50) {
+            let offset = Math.sin(x / 50 + t * 3 + i) * waveHeight;
+            ctx.lineTo(x, y + offset);
+        }
         ctx.stroke();
     }
 }
 
-// Update water color based on stone counts
+// Update water color based on mood
 function updateWaterColor() {
-    // Darken for negative stones
-    if (negativeCount > 0) {
-        waterColor.r = Math.max(0, baseColor.r - negativeCount * 5);
-        waterColor.g = Math.max(0, baseColor.g - negativeCount * 5);
-        waterColor.b = Math.max(0, baseColor.b - negativeCount * 5);
-    }
+    const moodFactor = positiveCount - negativeCount;
 
-    // Lighten for positive stones
-    if (positiveCount > 0) {
-        waterColor.r = Math.min(200, baseColor.r + positiveCount * 3);
-        waterColor.g = Math.min(255, baseColor.g + positiveCount * 3);
-        waterColor.b = Math.min(255, baseColor.b + positiveCount * 3);
-    }
+    // Smoothly adjust RGB values
+    waterColor.r += (baseColor.r + moodFactor * 4 - waterColor.r) * 0.02;
+    waterColor.g += (baseColor.g + moodFactor * 6 - waterColor.g) * 0.02;
+    waterColor.b += (baseColor.b + moodFactor * 8 - waterColor.b) * 0.02;
 }
 
 // Animation loop
@@ -141,23 +153,23 @@ function animate() {
 
 animate();
 
+// Keyboard controls (use your clicker)
 window.addEventListener('keydown', (e) => {
-    if (e.code === 'ArrowRight') { // or any key your clicker sends
-        addRipple(Math.random() * canvas.width, Math.random() * canvas.height, 'positive');
+    if (e.code === 'ArrowRight') {
+        addRipple(0, 0, 'positive');
     } else if (e.code === 'ArrowLeft') {
-        addRipple(Math.random() * canvas.width, Math.random() * canvas.height, 'negative');
+        addRipple(0, 0, 'negative');
     } else if (e.code === 'Space') {
         resetWater();
     }
 });
 
-
-// Button events
+// Button controls (optional UI)
 document.getElementById('negativeBtn').addEventListener('click', () => addRipple(0, 0, 'negative'));
 document.getElementById('positiveBtn').addEventListener('click', () => addRipple(0, 0, 'positive'));
 document.getElementById('resetBtn').addEventListener('click', resetWater);
 
-// Click canvas: default mode negative
+// Click interaction
 canvas.addEventListener('click', (e) => addRipple(e.clientX, e.clientY, 'negative'));
 
 // Resize canvas
@@ -165,3 +177,4 @@ window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 });
+
