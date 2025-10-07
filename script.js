@@ -41,15 +41,16 @@ class Ripple {
     draw() {
         ctx.beginPath();
         const segments = 100;
-        for (let i = 0; i <= segments; i++) {
-            let angle = (i / segments) * Math.PI * 2;
-            let r = this.radius + Math.sin(i / 10) * 5 * this.waveNoise;
-            let px = this.x + Math.cos(angle) * r;
-            let py = this.y + Math.sin(angle) * r;
-            if (i === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
+        for (let i = 0; i < segments; i++) {
+        let angle = (i / segments) * Math.PI * 2;
+        let r = this.radius + Math.sin(angle * 4) * 5 * this.waveNoise;
+        let px = this.x + Math.cos(angle) * r;
+        let py = this.y + Math.sin(angle) * r;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
         }
         ctx.closePath();
+
         ctx.strokeStyle = `rgba(${this.color},${this.alpha})`;
         ctx.lineWidth = 4 + this.waveNoise * 3;
         ctx.stroke();
