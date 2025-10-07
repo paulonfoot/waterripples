@@ -153,16 +153,37 @@ function animate() {
 
 animate();
 
-// Keyboard controls (use your clicker)
+// Keyboard and clicker controls
 window.addEventListener('keydown', (e) => {
-    if (e.code === 'ArrowRight') {
+    const key = e.code || e.key;
+
+    // Positive (calming) stones
+    if (
+        key === 'ArrowRight' ||
+        key === 'PageDown' ||
+        key === 'Enter' ||
+        key === 'KeyN' ||
+        key === 'Space'
+    ) {
         addRipple(0, 0, 'positive');
-    } else if (e.code === 'ArrowLeft') {
+    }
+
+    // Negative (stormy) stones
+    if (
+        key === 'ArrowLeft' ||
+        key === 'PageUp' ||
+        key === 'Backspace' ||
+        key === 'KeyP'
+    ) {
         addRipple(0, 0, 'negative');
-    } else if (e.code === 'Space') {
+    }
+
+    // Reset water (optional: use 'R')
+    if (key === 'KeyR') {
         resetWater();
     }
 });
+
 
 // Button controls (optional UI)
 document.getElementById('negativeBtn').addEventListener('click', () => addRipple(0, 0, 'negative'));
