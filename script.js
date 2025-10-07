@@ -120,7 +120,8 @@ function drawWaterBackground() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Add dynamic shimmer lines for realism
-    ctx.strokeStyle = `rgba(255,255,255,${0.03 + turbulence * 0.02})`;
+    ctx.strokeStyle = `rgba(255,255,255,${0.08 + turbulence * 0.04})`; // brighter
+ctx.lineWidth = 2 + turbulence * 1.5; // thicker lines
 for (let i = 0; i < 8; i++) {
     ctx.beginPath();
     let y = canvas.height * (i / 8) + Math.sin(t * 2 + i) * waveHeight;
@@ -131,6 +132,7 @@ for (let i = 0; i < 8; i++) {
     }
     ctx.stroke();
 }
+
 
 }
 
