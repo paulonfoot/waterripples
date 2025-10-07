@@ -153,30 +153,20 @@ function animate() {
 
 animate();
 
-// Keyboard and clicker controls
 window.addEventListener('keydown', (e) => {
     const key = e.code || e.key;
 
-    // Positive (calming) stones
-    if (
-        key === 'ArrowRight' ||
-        key === 'PageDown' ||
-        key === 'Enter' ||
-        key === 'KeyN' ||
-        key === 'Space'
-    ) {
-        addRipple(0, 0, 'positive');
+    // Prevent default scrolling behavior
+    if (key === 'PageUp' || key === 'PageDown') {
+        e.preventDefault();
     }
 
-    // Negative (stormy) stones
-    if (
-        key === 'ArrowLeft' ||
-        key === 'PageUp' ||
-        key === 'Backspace' ||
-        key === 'KeyP'
-    ) {
+    if (key === 'PageDown') {
+        addRipple(0, 0, 'positive');
+    } else if (key === 'PageUp') {
         addRipple(0, 0, 'negative');
     }
+});
 
     // Reset water (optional: use 'R')
     if (key === 'KeyR') {
