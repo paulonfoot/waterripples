@@ -3,6 +3,11 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Make canvas focusable and auto-focus for clicker
+canvas.tabIndex = 1;
+canvas.focus();
+canvas.addEventListener('click', () => canvas.focus());
+
 // Base water color
 const baseColor = { r: 10, g: 61, b: 98 };
 let waterColor = { ...baseColor };
@@ -69,6 +74,7 @@ function addRipple(x, y, type) {
             x = Math.random() * canvas.width;
             y = Math.random() * canvas.height;
         }
+
         speed = 5;
         turbulence += 0.2; // more chaos
 
@@ -76,7 +82,7 @@ function addRipple(x, y, type) {
         color = '50,255,255';
         positiveCount++;
 
-        // Random positions for variety
+        // First positive stone in center if no negatives
         if (positiveCount === 1 && negativeCount === 0) {
             x = canvas.width / 2;
             y = canvas.height / 2;
@@ -153,32 +159,33 @@ function animate() {
 
 animate();
 
+// Keyboard and clicker controls
 window.addEventListener('keydown', (e) => {
     const key = e.code || e.key;
 
-    // Prevent default scrolling behavior
+    // Prevent default scrolling for PageUp/PageDown
     if (key === 'PageUp' || key === 'PageDown') {
         e.preventDefault();
     }
 
-    if (key === 'PageDown') {
+    // Positive ripple
+    if (key === 'PageDown' || key === 'ArrowRight' || key === 'Enter' || key === 'KeyN') {
         addRipple(0, 0, 'positive');
-    } else if (key === 'PageUp') {
+    }
+    // Negative ripple
+    else if (key === 'PageUp' || key === 'ArrowLeft' || key === 'Backspace' || key === 'KeyP') {
         addRipple(0, 0, 'negative');
     }
-});
-
-    // Reset water (optional: use 'R')
-    if (key === 'KeyR') {
+    // Reset water
+    else if (key === 'KeyR' || key === 'Space') {
         resetWater();
     }
 });
 
-
 // Button controls (optional UI)
-document.getElementById('negativeBtn').addEventListener('click', () => addRipple(0, 0, 'negative'));
-document.getElementById('positiveBtn').addEventListener('click', () => addRipple(0, 0, 'positive'));
-document.getElementById('resetBtn').addEventListener('click', resetWater);
+document.getElementById('negativeBtn')?.addEventListener('click', () => addRipple(0, 0, 'negative'));
+document.getElementById('positiveBtn')?.addEventListener('click', () => addRipple(0, 0, 'positive'));
+document.getElementById('resetBtn')?.addEventListener('click', resetWater);
 
 // Click interaction
 canvas.addEventListener('click', (e) => addRipple(e.clientX, e.clientY, 'negative'));
@@ -188,4 +195,3 @@ window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 });
-
