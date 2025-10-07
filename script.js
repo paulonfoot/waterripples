@@ -121,16 +121,17 @@ function drawWaterBackground() {
 
     // Add dynamic shimmer lines for realism
     ctx.strokeStyle = `rgba(255,255,255,${0.03 + turbulence * 0.02})`;
-    for (let i = 0; i < 8; i++) {
-        ctx.beginPath();
-        let y = canvas.height * (i / 8) + Math.sin(t * 2 + i) * waveHeight;
-        ctx.moveTo(0, y);
-        for (let x = 0; x <= canvas.width; x += 50) {
-            let offset = Math.sin(x / 50 + t * 3 + i) * waveHeight;
-            ctx.lineTo(x, y + offset);
-        }
-        ctx.stroke();
+for (let i = 0; i < 8; i++) {
+    ctx.beginPath();
+    let y = canvas.height * (i / 8) + Math.sin(t * 2 + i) * waveHeight;
+    ctx.moveTo(0, y);
+    for (let x = 0; x <= canvas.width; x += 50) {
+        let offset = Math.sin(x / 50 + t * 3 + i) * waveHeight;
+        ctx.lineTo(x, y + offset);
     }
+    ctx.stroke();
+}
+
 }
 
 // Update water color based on mood
