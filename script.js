@@ -168,7 +168,7 @@ window.addEventListener('keydown', (e) => {
     const key = e.code || e.key;
 
     // Prevent default scrolling for PageUp/PageDown
-    if (key === 'PageUp' || key === 'PageDown') {
+    if (key === 'PageUp' || key === 'PageDown'|| key === 'KeyB') {
         e.preventDefault();
     }
 
@@ -181,7 +181,7 @@ window.addEventListener('keydown', (e) => {
         addRipple(0, 0, 'negative');
     }
     // Reset water
-    else if (key === 'KeyR' || key === 'Space') {
+    else if (key === 'KeyR' || key === 'Space'|| key === 'KeyB') {
         resetWater();
     }
 });
